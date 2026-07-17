@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>加入课堂 - 标准汉语360句</title>
+    <!-- 引入 QRCode 库用于生成二维码 -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js">
+    </script>
+    <style>
+        /* ===== 全局样式 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(145deg, #fdf6f0 0%, #f5e6da 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(255, 248, 242, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 40px;
+            box-shadow: 0 20px 60px rgba(180, 120, 80, 0.18), 0 6px 20px rgba(180, 120, 80, 0.08);
+            padding: 36px 30px 32px;
+            border: 1px solid rgba(255, 235, 220, 0.6);
+            text-align: center;
+        }
+
+        .header .icon {
+            font-size: 3.2rem;
+            margin-bottom: 4px;
+        }
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #7a4a3a;
+            letter-spacing: 1px;
+        }
+        .header .sub {
+            color: #a67c6a;
+            font-size: 1rem;
+            letter-spacing: 3px;
+            margin-top: 2px;
+            border-bottom: 2px dashed #ecd7cb;
+            padding-bottom: 16px;
+        }
+
+        .qr-section {
+            margin: 20px 0 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .qr-section .label {
+            font-size: 0.9rem;
+            color: #7a5f50;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        #qrcode {
+            background: #ffffff;
+            padding: 16px;
+            border-radius: 20px;
+            box-shadow: 0 6px 24px rgba(160, 110, 70, 0.12);
+            display: inline-block;
+        }
+        .qr-hint {
+            font-size: 0.8rem;
+            color: #b89a88;
+            margin-top: 10px;
+        }
+
+        .join-form {
+            margin: 20px 0 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+        }
+        .join-form .row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+        }
+        .join-form input {
+            flex: 1;
+            min-width: 180px;
+            padding: 14px 20px;
+            border: 2px solid #ecd7cb;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            background: #fffcf9;
+            outline: none;
+            transition: 0.15s;
+            color: #3f2b21;
+        }
+        .join-form input:focus {
+            border-color: #c49a82;
+            box-shadow: 0 0 0 4px rgba(196, 154, 130, 0.2);
+        }
+        .join-form input::placeholder {
+            color: #b89a88;
+        }
+        .join-form .btn-join {
+            background: #7a4a3a;
+            border: none;
+            color: #fff;
+            padding: 14px 48px;
+            border-radius: 40px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 4px 14px rgba(122, 74, 58, 0.3);
+            width: 100%;
+        }
+        .join-form .btn-join:hover {
+            background: #8f5d4a;
+            transform: translateY(-2px);
+        }
+        .join-form .btn-join:active {
+            transform: scale(0.97);
+        }
+
+        .message {
+            margin-top: 14px;
+            font-size: 1rem;
+            color: #7a5f50;
+            min-height: 30px;
+        }
+        .message.success {
+            color: #2d5a1e;
+            font-weight: 600;
+        }
+        .message.error {
+            color: #c47a6a;
+            font-weight: 600;
+        }
+
+        .code-hint {
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: #f5e6da;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            color: #5a3f33;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .code-hint strong {
+            background: #fff;
+            padding: 2px 16px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: #7a4a3a;
+            font-family: monospace;
+        }
+        .code-hint .hint-text {
+            color: #8f7568;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: #b89a88;
+            letter-spacing: 1px;
+            border-top: 1px solid #ecd7cb;
+            padding-top: 16px;
+        }
+        .footer a {
+            color: #7a4a3a;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 28px 18px 24px;
+                border-radius: 32px;
+            }
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            .join-form input {
+                min-width: 140px;
+                font-size: 1rem;
+                padding: 12px 16px;
+            }
+            .join-form .btn-join {
+                font-size: 1rem;
+                padding: 12px 32px;
+            }
+            #qrcode {
+                padding: 12px;
+            }
+            #qrcode canvas {
+                width: 160px !important;
+                height: 160px !important;
+            }
+            .code-hint strong {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            #qrcode canvas {
+                width: 130px !important;
+                height: 130px !important;
+            }
+            .join-form .row {
+                flex-direction: column;
+                align-items: center;
+            }
+            .join-form input {
+                width: 100%;
+                min-width: unset;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+
+            <div class="header">
+                <div class="icon">📚</div>
+                <h1>标准汉语会话 360 句</h1>
+                <div class="sub">— 扫码加入课堂 —</div>
+            </div>
+
+            <div class="qr-section">
+                <div class="label">📲 扫描二维码加入</div>
+                <div id="qrcode"></div>
+                <div class="qr-hint">扫码后输入姓名即可加入课堂</div>
+            </div>
+
+            <div class="join-form">
+                <div class="row">
+                    <input type="text" id="studentNameInput" placeholder="输入你的姓名" maxlength="20" autofocus />
+                </div>
+                <button class="btn-join" id="joinBtn">✅ 加入课堂</button>
+            </div>
+            <div class="message" id="message"></div>
+
+            <div class="code-hint">
+                <span class="hint-text">🔑 课堂码：</span>
+                <strong id="classCodeDisplay">——</strong>
+                <span style="font-size:0.8rem;color:#8f7568;">（向老师获取）</span>
+            </div>
+
+            <div class="footer">
+                <span>📖 《标准汉语会话360句1》 · 第一课</span><br />
+                <span style="font-size:0.7rem;">加入后自动跳转至练习页面</span>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        //  ★★★ 重要配置 ★★★
+        //  请将下面的 MAIN_PAGE_URL 修改为您主练习页面的实际公网地址
+        //  例如：'https://yourname.github.io/pinyin-practice/'
+        //  如果 join.html 和 index.html 在同一目录，可保持为 'index.html'
+        // ================================================================
+        const MAIN_PAGE_URL = 'index.html'; // 默认同目录，您可改为完整地址
+
+        // ================================================================
+        //  课堂码相关（与主页面教师控制台共享 localStorage）
+        // ================================================================
+        const CLASS_CODE_KEY = 'pinyin_class_code';
+
+        // ================================================================
+        //  DOM 引用
+        // ================================================================
+        const studentNameInput = document.getElementById('studentNameInput');
+        const joinBtn = document.getElementById('joinBtn');
+        const messageEl = document.getElementById('message');
+        const qrcodeContainer = document.getElementById('qrcode');
+        const classCodeDisplay = document.getElementById('classCodeDisplay');
+
+        // ================================================================
+        //  工具函数
+        // ================================================================
+        function getClassCode() {
+            try {
+                return localStorage.getItem(CLASS_CODE_KEY) || '';
+            } catch { return ''; }
+        }
+
+        function setStudentName(name) {
+            try {
+                localStorage.setItem('pinyin_current_student', name);
+            } catch (e) {
+                console.warn('无法保存学生姓名:', e);
+            }
+        }
+
+        function getStudents() {
+            try {
+                return JSON.parse(localStorage.getItem('pinyin_students')) || [];
+            } catch { return []; }
+        }
+
+        function saveStudents(students) {
+            try {
+                localStorage.setItem('pinyin_students', JSON.stringify(students));
+            } catch (e) {
+                console.warn('无法保存学生列表:', e);
+            }
+        }
+
+        function addStudent(name) {
+            const students = getStudents();
+            if (students.find(s => s.name === name)) return false;
+            students.push({ name, points: 0 });
+            saveStudents(students);
+            return true;
+        }
+
+        function getMainPageUrl() {
+            // 如果 MAIN_PAGE_URL 是完整地址，直接返回
+            if (MAIN_PAGE_URL.startsWith('http://') || MAIN_PAGE_URL.startsWith('https://')) {
+                return MAIN_PAGE_URL;
+            }
+            // 否则基于当前页面所在目录拼接
+            const currentPath = window.location.pathname;
+            const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+            return window.location.origin + basePath + MAIN_PAGE_URL;
+        }
+
+        // ================================================================
+        //  生成二维码（指向主练习页面）
+        // ================================================================
+        function generateQRCode() {
+            const targetUrl = getMainPageUrl();
+            qrcodeContainer.innerHTML = '';
+            try {
+                new QRCode(qrcodeContainer, {
+                    text: targetUrl,
+                    width: 200,
+                    height: 200,
+                    colorDark: '#3f2b21',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            } catch (e) {
+                console.warn('QRCode 生成失败，请检查网络:', e);
+                qrcodeContainer.innerHTML = '<div style="padding:20px;color:#a67c6a;">⚠️ 二维码加载失败<br /><span style="font-size:0.8rem;">请刷新页面重试</span></div>';
+            }
+        }
+
+        // ================================================================
+        //  显示课堂码
+        // ================================================================
+        function updateClassCodeDisplay() {
+            const code = getClassCode();
+            classCodeDisplay.textContent = code || '未设置';
+        }
+
+        // ================================================================
+        //  加入课堂逻辑
+        // ================================================================
+        function handleJoin() {
+            const name = studentNameInput.value.trim();
+            if (!name) {
+                messageEl.textContent = '⚠️ 请输入你的姓名';
+                messageEl.className = 'message error';
+                return;
+            }
+
+            // 检查是否已存在
+            const exists = getStudents().some(s => s.name === name);
+            if (exists) {
+                // 已存在，直接设置为当前学生并跳转
+                setStudentName(name);
+                messageEl.textContent = `👋 欢迎回来，${name}！`;
+                messageEl.className = 'message success';
+                setTimeout(() => {
+                    window.location.href = getMainPageUrl();
+                }, 600);
+                return;
+            }
+
+            // 新增学生
+            const success = addStudent(name);
+            if (success) {
+                setStudentName(name);
+                messageEl.textContent = `✅ ${name} 加入成功！`;
+                messageEl.className = 'message success';
+                setTimeout(() => {
+                    window.location.href = getMainPageUrl();
+                }, 600);
+            } else {
+                messageEl.textContent = '⚠️ 加入失败，请稍后重试';
+                messageEl.className = 'message error';
+            }
+        }
+
+        // ================================================================
+        //  键盘事件（回车键快速加入）
+        // ================================================================
+        studentNameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleJoin();
+            }
+        });
+
+        // ================================================================
+        //  按钮点击事件
+        // ================================================================
+        joinBtn.addEventListener('click', handleJoin);
+
+        // ================================================================
+        //  初始化
+        // ================================================================
+        function init() {
+            generateQRCode();
+            updateClassCodeDisplay();
+
+            // 如果已经存在当前学生，预填姓名
+            try {
+                const current = localStorage.getItem('pinyin_current_student') || '';
+                if (current) {
+                    studentNameInput.value = current;
+                }
+            } catch (e) { /* ignore */ }
+
+            // 自动聚焦
+            setTimeout(() => {
+                studentNameInput.focus();
+            }, 300);
+
+            console.log('📚 加入课堂页面已加载');
+            console.log('🔗 二维码指向:', getMainPageUrl());
+            console.log('💡 学生加入后自动跳转至主练习页面');
+        }
+
+        // 页面加载完成后初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+
+</body>
+</html>
